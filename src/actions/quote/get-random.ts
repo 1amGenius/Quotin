@@ -19,7 +19,10 @@ interface Quote {
 
 export async function getRandomQuote(): Promise<Quote> {
     try {
-        const { data } = await axios.get<QuotableResponse[]>('https://api.quotable.io/quotes/random?minLength=77&maxLength=170', {
+        // Get selected categories from localStorage (this needs to be done client-side)
+        const apiUrl = 'https://api.quotable.io/quotes/random?minLength=77&maxLength=170';
+                
+        const { data } = await axios.get<QuotableResponse[]>(apiUrl, {
             headers: {
                 'Accept': 'application/json',
             },

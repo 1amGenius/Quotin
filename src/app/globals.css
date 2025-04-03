@@ -120,3 +120,64 @@
     @apply bg-background text-foreground;
   }
 }
+
+.gradient-button {
+  background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.05), rgba(255, 215, 0, 0.1));
+  transition: background 0.7s ease-in-out, border-color 0.3s ease-in-out, color 0.3s ease-in-out;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.gradient-button:hover {
+  background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.1), rgba(255, 215, 0, 0.15));
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.gradient-button:active {
+  background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.15), rgba(255, 215, 0, 0.2));
+}
+
+/* Add sparkles */
+.gradient-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle at center, rgba(255, 255, 255, 0.2) 1px, transparent 1px);
+  background-size: 15px 15px;
+  opacity: 0;
+  transition: opacity 0.7s ease-in-out;
+  pointer-events: none;
+  animation: sparkle 4s linear infinite;
+}
+
+.gradient-button:hover::after {
+  opacity: 0.5;
+}
+
+@keyframes sparkle {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 15px 15px;
+  }
+}
+
+@keyframes fadeOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+}
+
+.animate-fadeOutRight {
+  animation: fadeOutRight 0.3s ease-in-out forwards;
+}

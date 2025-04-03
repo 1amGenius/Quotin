@@ -9,6 +9,8 @@ import {
 	TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { toast } from 'sonner'
+import { storage } from '@/lib/storage'
+import { useBookmarks } from '@/context/BookmarkContext'
 
 interface ActionButtonsProps {
 	quoteToCopy: string
@@ -19,9 +21,12 @@ export default function ActionButtons({
 	onRefresh,
 	quoteToCopy,
 }: ActionButtonsProps) {
-	const [isStarFilled, setIsStarFilled] = useState(false)
-	const [isCopied, setIsCopied] = useState(false)
+	const { addBookmark, removeBookmark, isBookmarked } = useBookmarks()
 	const [isRefreshing, setIsRefreshing] = useState(false)
+	const [isCopied, setIsCopied] = useState(false)
+
+	// Extract quote and author from quoteToCopy
+	const [quote, author] = quoteToCopy.split(' -')
 
 	const handleCopy = async () => {
 		try {
@@ -78,6 +83,28 @@ export default function ActionButtons({
 		}
 	}
 
+	const handleBookmarkToggle = () => {
+		if (isBookmarked(quote)) {
+			// Find the bookmark ID to remove
+			const bookmarkToRemove = storage
+				.getBookmarks()
+				.find(b => b.quote === quote)
+			if (bookmarkToRemove) {
+				removeBookmark(bookmarkToRemove.id)
+				toast.success('Quote removed from bookmarks!', {
+					position: 'bottom-right',
+					duration: 2000,
+				})
+			}
+		} else {
+			addBookmark(quote, author)
+			toast.success('Quote added to bookmarks!', {
+				position: 'bottom-right',
+				duration: 2000,
+			})
+		}
+	}
+
 	return (
 		<>
 			<div className='absolute z-1 -top-10.5 right-4 bg-black/10 border-t border-l border-r border-white/10 backdrop-blur-sm rounded-lg p-2 transform transition-all duration-300 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0'>
@@ -86,12 +113,14 @@ export default function ActionButtons({
 						<TooltipTrigger asChild>
 							<button
 								className='text-white/80 mr-2 hover:text-white transition-colors duration-200'
-								onClick={() => setIsStarFilled(!isStarFilled)}
+								onClick={handleBookmarkToggle}
 							>
 								<svg
 									className='h-5 w-5'
 									viewBox='0 0 24 24'
-									fill={isStarFilled ? '#FFD700' : 'none'}
+									fill={
+										isBookmarked(quote) ? '#FFD700' : 'none'
+									}
 									stroke='currentColor'
 									strokeWidth='1.5'
 									strokeLinecap='round'
@@ -105,7 +134,11 @@ export default function ActionButtons({
 							</button>
 						</TooltipTrigger>
 						<TooltipContent>
-							<p>{isStarFilled ? 'Bookmarked' : 'Bookmark'}</p>
+							<p>
+								{isBookmarked(quote)
+									? 'Bookmarked'
+									: 'Bookmark'}
+							</p>
 						</TooltipContent>
 					</Tooltip>
 				</TooltipProvider>
