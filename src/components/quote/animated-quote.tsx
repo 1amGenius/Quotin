@@ -18,7 +18,7 @@ export default function AnimatedQuote({
 	if (position === 'left') {
 		return (
 			<span
-				className={`absolute -left-0 pl-5 md:mt-2 mt-4 top-0 ${baseClasses} ${className}`}
+				className={`absolute -left-0 pl-5 md:pl-3.5 md:mt-2 mt-4 top-0 ${baseClasses} ${className}`}
 			>
 				&ldquo;
 			</span>
@@ -27,7 +27,7 @@ export default function AnimatedQuote({
 
 	return (
 		<span
-			className={`absolute -right-0 pr-5 md:mt-2 mt-4 top-0 ${baseClasses} ${className}`}
+			className={`absolute -right-0 pr-5 md:pr-3 md:mt-2 mt-4 top-0 ${baseClasses} ${className}`}
 		>
 			&rdquo;
 		</span>

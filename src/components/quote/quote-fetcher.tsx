@@ -31,42 +31,16 @@ export default function QuoteFetcher() {
 		}
 
 		try {
-			// If there are no categories in localStorage, use the server action
-			if (categories.length === 0) {
-				const serverQuote = await getRandomQuote()
-				setQuote({
-					...serverQuote,
-				})
-				setIsLoading(false)
-				setHasInitialized(true)
-				return
-			}
-
-			// If there are categories, use the client-side API call with categories
-			const tagsParam = categories.join('|')
-			const apiUrl = `https://api.quotable.io/quotes/random?minLength=77&maxLength=170&tags=${tagsParam}`
-
-			const response = await fetch(apiUrl)
-
-			if (!response.ok) {
-				throw new Error(
-					`API request failed with status: ${response.status}`
-				)
-			}
-
-			const data = await response.json()
-
-			if (data && data.length > 0) {
-				setQuote({
-					text: data[0].content,
-					name: data[0].author,
-				})
-			} else {
-				throw new Error('No quote returned')
-			}
+			// Use the server action for all requests, passing categories if available
+			const serverQuote = await getRandomQuote(
+				categories.length > 0 ? categories : undefined
+			)
+			setQuote({
+				...serverQuote,
+			})
 		} catch (error) {
 			console.error('Error fetching quote:', error)
-			// Fallback quote with a default tag
+			// Fallback quote
 			setQuote({
 				text: 'The best way to predict the future is to invent it.',
 				name: 'Alan Kay',

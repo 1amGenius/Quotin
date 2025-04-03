@@ -9,9 +9,22 @@ const SearchBox = () => {
 	const [isFocused, setIsFocused] = useState(false)
 	const [suggestions, setSuggestions] = useState<string[]>([])
 	const [showSuggestions, setShowSuggestions] = useState(false)
+	const [isDesktop, setIsDesktop] = useState(true)
 	const { currentColor } = useColors()
 	const suggestionRef = useRef<HTMLDivElement>(null)
 	const inputRef = useRef<HTMLInputElement>(null)
+
+	// Check if window exists and set device type
+	useEffect(() => {
+		setIsDesktop(window.innerWidth >= 1024)
+
+		const handleResize = () => {
+			setIsDesktop(window.innerWidth >= 1024)
+		}
+
+		window.addEventListener('resize', handleResize)
+		return () => window.removeEventListener('resize', handleResize)
+	}, [])
 
 	useEffect(() => {
 		// Function to fetch suggestions
@@ -164,9 +177,23 @@ const SearchBox = () => {
 				)}
 			</div>
 			<p className='text-xs text-center mt-2 text-white/50'>
-				{window.innerWidth >= 1024
-					? 'Press Ctrl+K or ⌘K to search • Enter to submit'
-					: 'In order to use all of the features, please use a desktop computer'}
+				{isDesktop ? (
+					<>
+						Press{' '}
+						{navigator.userAgent.includes('Win') ? (
+							<span className='bg-white/10 px-1 rounded'>
+								<kbd>Ctrl</kbd> + <kbd>K</kbd>
+							</span>
+						) : (
+							<span className='bg-white/10 px-1 rounded'>
+								<kbd>⌘</kbd> + <kbd>K</kbd>
+							</span>
+						)}{' '}
+						to search • Enter to submit
+					</>
+				) : (
+					'In order to use all of the features, please use a desktop computer'
+				)}
 			</p>
 		</form>
 	)
