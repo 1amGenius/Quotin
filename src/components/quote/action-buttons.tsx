@@ -106,19 +106,6 @@ export default function ActionButtons({
 		}
 	}
 
-	const handleTranslate = () => {
-		setIsTranslating(true)
-		// Open translation in a new window/tab
-		const googleTranslateUrl = `https://translate.google.com/?sl=auto&tl=auto&text=${encodeURIComponent(
-			quote
-		)}&op=translate`
-		window.open(googleTranslateUrl, '_blank')
-
-		setTimeout(() => {
-			setIsTranslating(false)
-		}, 1000)
-	}
-
 	return (
 		<>
 			<div className='absolute z-1 -top-10.5 right-4 bg-black/10 border-t border-l border-r border-white/10 backdrop-blur-sm rounded-lg p-2 transform transition-all duration-300 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0'>
@@ -206,7 +193,7 @@ export default function ActionButtons({
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<button
-								className='text-white/80 border-l border-white/30 pl-2 hover:text-white transition-colors duration-200'
+								className='text-white/80 border-l border-white/30 px-2 hover:text-white transition-colors duration-200'
 								onClick={handleRefresh}
 								disabled={isRefreshing}
 							>
@@ -219,6 +206,22 @@ export default function ActionButtons({
 						</TooltipTrigger>
 						<TooltipContent>
 							<p>{isRefreshing ? 'Loading...' : 'New Quote'}</p>
+						</TooltipContent>
+					</Tooltip>
+				</TooltipProvider>
+
+				<TooltipProvider>
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<button
+								className='text-white/80 border-l border-white/30 px-2 hover:text-white transition-colors duration-200'
+								onClick={handleTranslate}
+							>
+								<TbLanguage className='h-5 w-5' />
+							</button>
+						</TooltipTrigger>
+						<TooltipContent>
+							<p>Translate</p>
 						</TooltipContent>
 					</Tooltip>
 				</TooltipProvider>

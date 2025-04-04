@@ -4,8 +4,6 @@ import './globals.css'
 import { Toaster } from '@/components/ui/sonner'
 import { BookmarkProvider } from '@/context/BookmarkContext'
 import { ColorsProvider } from '@/context/ColorsContext'
-import { ShortcutsProvider } from '@/context/ShortcutsContext'
-import YouTubeLinks from '@/components/YoutubeLinks'
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
