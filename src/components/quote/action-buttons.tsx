@@ -24,6 +24,7 @@ export default function ActionButtons({
 	const { addBookmark, removeBookmark, isBookmarked } = useBookmarks()
 	const [isRefreshing, setIsRefreshing] = useState(false)
 	const [isCopied, setIsCopied] = useState(false)
+	const [isTranslating, setIsTranslating] = useState(false)
 
 	// Extract quote and author from quoteToCopy
 	const [quote, author] = quoteToCopy.split(' -')
@@ -105,30 +106,6 @@ export default function ActionButtons({
 		}
 	}
 
-	const handleTranslate = () => {
-		try {
-			// Encode the quote text for a URL
-			const encodedQuote = encodeURIComponent(quote)
-
-			// Create Google Translate URL with the quote prefilled
-			const translateUrl = `https://translate.google.com/?text=${encodedQuote}`
-
-			// Open Google Translate in a new tab
-			window.open(translateUrl, '_blank')
-
-			toast.success('Opening Google Translate', {
-				position: 'bottom-right',
-				duration: 2000,
-			})
-		} catch (error) {
-			console.error('Error opening Google Translate:', error)
-			toast.error('Failed to open Google Translate', {
-				position: 'bottom-right',
-				duration: 2000,
-			})
-		}
-	}
-
 	return (
 		<>
 			<div className='absolute z-1 -top-10.5 right-4 bg-black/10 border-t border-l border-r border-white/10 backdrop-blur-sm rounded-lg p-2 transform transition-all duration-300 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0'>
@@ -185,6 +162,29 @@ export default function ActionButtons({
 						</TooltipTrigger>
 						<TooltipContent>
 							<p>{isCopied ? 'Copied!' : 'Copy'}</p>
+						</TooltipContent>
+					</Tooltip>
+				</TooltipProvider>
+
+				<TooltipProvider>
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<button
+								className='text-white/80 border-l border-white/30 px-2 hover:text-white transition-colors duration-200'
+								onClick={handleTranslate}
+								disabled={isTranslating}
+							>
+								<TbLanguage
+									className={`h-5 w-5 ${
+										isTranslating ? 'animate-pulse' : ''
+									}`}
+								/>
+							</button>
+						</TooltipTrigger>
+						<TooltipContent>
+							<p>
+								{isTranslating ? 'Translating...' : 'Translate'}
+							</p>
 						</TooltipContent>
 					</Tooltip>
 				</TooltipProvider>

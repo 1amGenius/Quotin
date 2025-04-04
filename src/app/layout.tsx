@@ -4,7 +4,6 @@ import './globals.css'
 import { Toaster } from '@/components/ui/sonner'
 import { BookmarkProvider } from '@/context/BookmarkContext'
 import { ColorsProvider } from '@/context/ColorsContext'
-import YouTubeLinks from '@/components/YouTubeLinks'
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -32,7 +31,9 @@ export default function RootLayout({
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
                 <ColorsProvider>
-                    <BookmarkProvider>{children}</BookmarkProvider>
+                    <BookmarkProvider>
+                        <ShortcutsProvider>{children}</ShortcutsProvider>
+                    </BookmarkProvider>
                 </ColorsProvider>
                 <YouTubeLinks />
                 <Toaster />

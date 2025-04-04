@@ -23,17 +23,21 @@ export default function TextContainer({
 	const [startTyping, setStartTyping] = useState(false)
 	const [showSignature, setShowSignature] = useState(false)
 
+	// Reset animations whenever the quote changes
 	useEffect(() => {
 		if (quote) {
-			setShowQuotes(true)
+			// Start the animation sequence
+			setShowQuotes(false)
+			setStartTyping(false)
+			setShowSignature(false)
 
-			const typingTimer = setTimeout(() => {
-				setStartTyping(true)
-			}, 500)
-
-			return () => clearTimeout(typingTimer)
+			// Short delay to ensure animations reset
+			setTimeout(() => {
+				setShowQuotes(true)
+				setTimeout(() => setStartTyping(true), 500)
+			}, 50)
 		}
-	}, [quote])
+	}, [quote]) // This dependency ensures we respond to every quote change
 
 	const handleRefresh = async () => {
 		// Reset animation states
@@ -54,12 +58,15 @@ export default function TextContainer({
 		return null
 	}
 
+	// Create the quote string to copy with the actual current quote
+	const quoteToCopy = `${quote.text} -${quote.name}`
+
 	return (
 		<div className='relative z-20 flex flex-col items-center justify-center'>
 			<div className='group z-30 bg-black/10 p-6 rounded-2xl backdrop-blur-[100px] border border-white/10 shadow-sm shadow-white/10 relative min-w-[85vw] md:min-w-[800px] max-w-[85vw] md:max-w-[800px] before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-white/10 before:via-transparent before:to-transparent before:pointer-events-none'>
 				<ActionButtons
 					onRefresh={handleRefresh}
-					quoteToCopy={`${quote.text} -${quote.name}`}
+					quoteToCopy={quoteToCopy}
 				/>
 				<AnimatedQuote show={showQuotes} position='left' />
 				<div className='min-h-[100px] md:min-h-[120px]'>
