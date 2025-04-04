@@ -6,6 +6,35 @@ import { FaGoogle } from 'react-icons/fa'
 import { SiDuckduckgo } from 'react-icons/si'
 import { BsBing } from 'react-icons/bs'
 import { useColors } from '@/context/ColorsContext'
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select'
+
+// Define the storage key for search engine preference
+const STORAGE_KEY = 'preferred_search_engine'
+
+// Define search engines
+const searchEngines = [
+	{
+		name: 'Google',
+		url: 'https://www.google.com/search?q=',
+		icon: <FaGoogle className='mr-2 text-white/80' />,
+	},
+	{
+		name: 'Bing',
+		url: 'https://www.bing.com/search?q=',
+		icon: <BsBing className='mr-2 text-blue-500' />,
+	},
+	{
+		name: 'DuckDuckGo',
+		url: 'https://duckduckgo.com/?q=',
+		icon: <SiDuckduckgo className='mr-2 text-orange-400' />,
+	},
+]
 
 const SearchBox = () => {
 	const [query, setQuery] = useState('')
@@ -13,6 +42,7 @@ const SearchBox = () => {
 	const [suggestions, setSuggestions] = useState<string[]>([])
 	const [showSuggestions, setShowSuggestions] = useState(false)
 	const [isDesktop, setIsDesktop] = useState(true)
+	const [selectedEngine, setSelectedEngine] = useState(searchEngines[0])
 	const { currentColor } = useColors()
 	const suggestionRef = useRef<HTMLDivElement>(null)
 	const inputRef = useRef<HTMLInputElement>(null)
@@ -107,7 +137,7 @@ const SearchBox = () => {
 		e.preventDefault()
 		if (query.trim()) {
 			window.open(
-				`https://www.google.com/search?q=${encodeURIComponent(query)}`,
+				`${selectedEngine.url}${encodeURIComponent(query)}`,
 				'_blank'
 			)
 		}
@@ -117,100 +147,146 @@ const SearchBox = () => {
 		setQuery(suggestion)
 		setShowSuggestions(false)
 		window.open(
-			`https://www.google.com/search?q=${encodeURIComponent(suggestion)}`,
+			`${selectedEngine.url}${encodeURIComponent(suggestion)}`,
 			'_blank'
 		)
 	}
 
-	return (
-		<form
-			onSubmit={handleSearch}
-			className={`w-full max-w-md mx-auto transition-all duration-300 ${
-				isFocused ? 'scale-105' : 'scale-100'
-			}`}
-		>
-			<div className='relative group' ref={suggestionRef}>
-				<div
-					className={`absolute inset-0 bg-gradient-to-r rounded-xl blur-md opacity-50 group-hover:opacity-70 transition duration-500 ${
-						isFocused ? 'opacity-70' : ''
-					}`}
-					style={{
-						background: `linear-gradient(to right, rgba(128, 128, 128, 0.5), rgba(100, 100, 100, 0.5), ${currentColor}70)`,
-					}}
-				></div>
-				<div
-					className='relative flex items-center bg-black/50 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden shadow-lg'
-					style={{
-						boxShadow: isFocused
-							? `0 0 15px 1px ${currentColor}30`
-							: 'none',
-					}}
-				>
-					<input
-						ref={inputRef}
-						type='text'
-						value={query}
-						onChange={e => setQuery(e.target.value)}
-						onFocus={() => {
-							setIsFocused(true)
-							setShowSuggestions(true)
-						}}
-						onBlur={() => setIsFocused(false)}
-						placeholder='Search the web...'
-						className='w-full py-3 px-4 bg-transparent text-white placeholder-white/50 focus:outline-none'
-					/>
-					<button
-						type='submit'
-						className='flex items-center justify-center h-full px-4 text-white'
-					>
-						<Search
-							className='w-5 h-5'
-							style={{ color: `${currentColor}` }}
-						/>
-					</button>
-				</div>
+	const handleEngineChange = (value: string) => {
+		const engine = searchEngines.find(e => e.name === value)
+		if (engine) {
+			setSelectedEngine(engine)
+			localStorage.setItem(STORAGE_KEY, value)
+		}
+	}
 
-				{/* Suggestions dropdown */}
-				{showSuggestions && suggestions.length > 0 && (
-					<div className='absolute w-full mt-2 bg-black/50 backdrop-blur-3xl border border-white/10 rounded-xl overflow-hidden shadow-lg z-40'>
-						{suggestions.map((suggestion, index) => (
-							<button
-								key={index}
-								type='button'
-								className='w-full px-4 py-2 text-white hover:bg-white/10 cursor-pointer transition-colors duration-200 flex items-center text-left'
-								onClick={e => {
-									e.preventDefault()
-									e.stopPropagation()
-									handleSuggestionClick(suggestion)
-								}}
-							>
-								<Search className='w-4 h-4 mr-2 opacity-50' />
-								{suggestion}
-							</button>
-						))}
+	return (
+		<div className='w-full max-w-md mx-auto md:ml-18 lg:mx-auto md:mb-7 lg:mb-16 '>
+			<form
+				onSubmit={handleSearch}
+				className={`w-full transition-all duration-300 ${
+					isFocused ? 'scale-105' : 'scale-100'
+				}`}
+			>
+				<div className='relative group' ref={suggestionRef}>
+					<div
+						className={`absolute inset-0 bg-gradient-to-r rounded-xl blur-md opacity-50 group-hover:opacity-70 transition duration-500 ${
+							isFocused ? 'opacity-70' : ''
+						}`}
+						style={{
+							background: `linear-gradient(to right, rgba(128, 128, 128, 0.5), rgba(100, 100, 100, 0.5), ${currentColor}70)`,
+						}}
+					></div>
+					<div
+						className='relative flex items-center bg-black/50 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden shadow-lg'
+						style={{
+							boxShadow: isFocused
+								? `0 0 15px 1px ${currentColor}30`
+								: 'none',
+						}}
+					>
+						<input
+							ref={inputRef}
+							type='text'
+							value={query}
+							onChange={e => setQuery(e.target.value)}
+							onFocus={() => {
+								setIsFocused(true)
+								setShowSuggestions(true)
+							}}
+							onBlur={() => setIsFocused(false)}
+							placeholder='Search the web...'
+							className='w-full py-3 px-4 bg-transparent text-white placeholder-white/50 focus:outline-none'
+						/>
+
+						<button
+							type='submit'
+							className='flex items-center justify-center h-full px-4 text-white'
+						>
+							<Search
+								className='w-5 h-5'
+								style={{ color: `${currentColor}` }}
+							/>
+						</button>
 					</div>
-				)}
-			</div>
-			<p className='text-xs text-center mt-2 text-white/50'>
-				{isDesktop ? (
-					<>
-						Press{' '}
-						{navigator.userAgent.includes('Win') ? (
-							<span className='bg-white/10 px-1 rounded'>
-								<kbd>Ctrl</kbd> + <kbd>K</kbd>
-							</span>
-						) : (
-							<span className='bg-white/10 px-1 rounded'>
-								<kbd>⌘</kbd> + <kbd>K</kbd>
-							</span>
-						)}{' '}
-						to search • Enter to submit
-					</>
-				) : (
-					'In order to use all of the features, please use a desktop computer'
-				)}
-			</p>
-		</form>
+
+					{/* Keyboard shortcuts - positioned at bottom left */}
+					<div className='absolute bottom-0 left-0 translate-y-full pt-2'>
+						<p className='text-xs text-left text-white/50'>
+							{isDesktop ? (
+								<>
+									Press{' '}
+									{navigator.userAgent.includes('Win') ? (
+										<span className='bg-white/10 px-1 rounded'>
+											<kbd>Ctrl</kbd> + <kbd>K</kbd>
+										</span>
+									) : (
+										<span className='bg-white/10 px-1 rounded'>
+											<kbd>⌘</kbd> + <kbd>K</kbd>
+										</span>
+									)}{' '}
+									to search • Enter to submit
+								</>
+							) : (
+								'Mobile mode: limited features'
+							)}
+						</p>
+					</div>
+
+					{/* Search engine selector - positioned at bottom right */}
+					<div className='absolute bottom-0 right-0 translate-y-full pt-2'>
+						<Select
+							value={selectedEngine.name}
+							onValueChange={handleEngineChange}
+						>
+							<SelectTrigger className='border-0 bg-black/50 backdrop-blur-md shadow-lg text-white/80 hover:text-white/80 text-xs'>
+								<SelectValue>
+									<div className='flex items-center gap-1.5'>
+										{selectedEngine.icon}
+										<span>{selectedEngine.name}</span>
+									</div>
+								</SelectValue>
+							</SelectTrigger>
+							<SelectContent className='bg-black/80 backdrop-blur-3xl border-white/10'>
+								{searchEngines.map(engine => (
+									<SelectItem
+										key={engine.name}
+										value={engine.name}
+										className='text-white hover:bg-white/10 hover:text-white data-[highlighted]:bg-white/10 data-[highlighted]:text-white'
+									>
+										<div className='flex items-center'>
+											{engine.icon}
+											{engine.name}
+										</div>
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
+
+					{/* Suggestions dropdown */}
+					{showSuggestions && suggestions.length > 0 && (
+						<div className='absolute w-full mt-2 bg-black/50 backdrop-blur-3xl border border-white/10 rounded-xl overflow-hidden shadow-lg z-40'>
+							{suggestions.map((suggestion, index) => (
+								<button
+									key={index}
+									type='button'
+									className='w-full px-4 py-2 text-white hover:bg-white/10 cursor-pointer transition-colors duration-200 flex items-center text-left'
+									onClick={e => {
+										e.preventDefault()
+										e.stopPropagation()
+										handleSuggestionClick(suggestion)
+									}}
+								>
+									<Search className='w-4 h-4 mr-2 opacity-50' />
+									{suggestion}
+								</button>
+							))}
+						</div>
+					)}
+				</div>
+			</form>
+		</div>
 	)
 }
 

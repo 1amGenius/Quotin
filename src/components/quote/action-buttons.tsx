@@ -106,6 +106,36 @@ export default function ActionButtons({
 		}
 	}
 
+	const handleTranslate = async () => {
+		if (isTranslating) return
+
+		setIsTranslating(true)
+		try {
+			// Extract just the quote text without the author for better translation
+			const textToTranslate = quote.trim()
+
+			// Create Google Translate URL with the quote text
+			const googleTranslateUrl = `https://translate.google.com/?text=${encodeURIComponent(
+				textToTranslate
+			)}`
+
+			// Open in a new tab
+			window.open(googleTranslateUrl, '_blank', 'noopener,noreferrer')
+
+			toast.success('Opened in Google Translate', {
+				position: 'bottom-right',
+				duration: 2000,
+			})
+		} catch {
+			toast.error('Failed to open translator', {
+				position: 'bottom-right',
+				duration: 2000,
+			})
+		} finally {
+			setIsTranslating(false)
+		}
+	}
+
 	return (
 		<>
 			<div className='absolute z-1 -top-10.5 right-4 bg-black/10 border-t border-l border-r border-white/10 backdrop-blur-sm rounded-lg p-2 transform transition-all duration-300 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0'>
@@ -206,22 +236,6 @@ export default function ActionButtons({
 						</TooltipTrigger>
 						<TooltipContent>
 							<p>{isRefreshing ? 'Loading...' : 'New Quote'}</p>
-						</TooltipContent>
-					</Tooltip>
-				</TooltipProvider>
-
-				<TooltipProvider>
-					<Tooltip>
-						<TooltipTrigger asChild>
-							<button
-								className='text-white/80 border-l border-white/30 px-2 hover:text-white transition-colors duration-200'
-								onClick={handleTranslate}
-							>
-								<TbLanguage className='h-5 w-5' />
-							</button>
-						</TooltipTrigger>
-						<TooltipContent>
-							<p>Translate</p>
 						</TooltipContent>
 					</Tooltip>
 				</TooltipProvider>

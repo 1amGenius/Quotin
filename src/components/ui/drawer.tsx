@@ -98,7 +98,8 @@ function DrawerTitle({
 }: React.ComponentProps<typeof DrawerPrimitive.Title>) {
   return (
     <DrawerPrimitive.Title
-      datlassName={cn("text-foreground font-semibold", className)}
+      data-slot="drawer-title"
+      className={cn("text-foreground font-semibold", className)}
       {...props}
     />
   )
@@ -115,4 +116,17 @@ function DrawerDescription({
       {...props}
     />
   )
+}
+
+export {
+  Drawer,
+  DrawerPortal,
+  DrawerOverlay,
+  DrawerTrigger,
+  DrawerClose,
+  DrawerContent,
+  DrawerHeader,
+  DrawerFooter,
+  DrawerTitle,
+  DrawerDescription,
 }
