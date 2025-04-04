@@ -6,6 +6,7 @@ import { BookmarkProvider } from '@/context/BookmarkContext'
 import { ColorsProvider } from '@/context/ColorsContext'
 import { ShortcutsProvider } from '@/context/ShortcutsContext'
 import YouTubeLinks from '@/components/YoutubeLinks'
+import TodoNotes from '@/components/TodoNotes'
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -38,6 +39,7 @@ export default function RootLayout({
                     </BookmarkProvider>
                 </ColorsProvider>
                 <YouTubeLinks />
+                <TodoNotes />
                 <Toaster />
             </body>
         </html>
