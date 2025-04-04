@@ -116,6 +116,7 @@ export function ColorsDialog({
 	} = useColors()
 
 	const handleColorSelect = (hex: string) => {
+		z
 		if (selectedColors.includes(hex)) {
 			removeColor(hex)
 		} else {

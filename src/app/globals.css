@@ -181,3 +181,23 @@
 .animate-fadeOutRight {
   animation: fadeOutRight 0.3s ease-in-out forwards;
 }
+
+/* Apply global styles */
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Additional styles for cards, buttons, etc. */
+.card {
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+}
+
+/* Shadow glow effect for the music button */
+.shadow-glow {
+  box-shadow: 0 0 15px 2px rgba(255, 255, 255, 0.3);
+}
+
+/* Add styles for other components as needed */
