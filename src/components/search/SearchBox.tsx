@@ -42,17 +42,21 @@ const SearchBox = () => {
 	const [suggestions, setSuggestions] = useState<string[]>([])
 	const [showSuggestions, setShowSuggestions] = useState(false)
 	const [isDesktop, setIsDesktop] = useState(true)
+	const [isMedium, setIsMedium] = useState(false)
 	const [selectedEngine, setSelectedEngine] = useState(searchEngines[0])
 	const { currentColor } = useColors()
 	const suggestionRef = useRef<HTMLDivElement>(null)
 	const inputRef = useRef<HTMLInputElement>(null)
 
 	useEffect(() => {
-		setIsDesktop(window.innerWidth >= 1024)
-
 		const handleResize = () => {
-			setIsDesktop(window.innerWidth >= 1024)
+			const width = window.innerWidth
+			setIsDesktop(width >= 1024)
+			setIsMedium(width >= 768 && width < 1024)
 		}
+
+		// Initialize on mount
+		handleResize()
 
 		window.addEventListener('resize', handleResize)
 		return () => window.removeEventListener('resize', handleResize)
@@ -211,8 +215,8 @@ const SearchBox = () => {
 					</div>
 
 					{/* Keyboard shortcuts - positioned at bottom left */}
-					<div className='absolute bottom-0 left-0 translate-y-full pt-2'>
-						<p className='text-xs text-left text-white/50'>
+					<div className='absolute bottom-0 left-0 translate-y-full pt-2 pr-32'>
+						<p className='text-xs text-left text-white/50 max-w-[260px] break-words'>
 							{isDesktop ? (
 								<>
 									Press{' '}
@@ -227,8 +231,10 @@ const SearchBox = () => {
 									)}{' '}
 									to search • Enter to submit
 								</>
+							) : isMedium ? (
+								'Tablet mode: all features, best experience on desktop'
 							) : (
-								'Mobile mode: limited features'
+								'Mobile mode: no shortcuts'
 							)}
 						</p>
 					</div>
