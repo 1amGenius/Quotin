@@ -13,7 +13,6 @@ interface Quote {
 export default function QuoteFetcher() {
 	const [quote, setQuote] = useState<Quote | null>(null)
 	const [isLoading, setIsLoading] = useState(true)
-	const [hasInitialized, setHasInitialized] = useState(false)
 
 	const fetchQuoteWithCategories = async () => {
 		setIsLoading(true)
@@ -35,6 +34,10 @@ export default function QuoteFetcher() {
 			const serverQuote = await getRandomQuote(
 				categories.length > 0 ? categories : undefined
 			)
+			console.log(
+				`[${new Date().toLocaleTimeString()}] Set quote:`,
+				serverQuote
+			)
 			setQuote({
 				...serverQuote,
 			})
@@ -47,16 +50,17 @@ export default function QuoteFetcher() {
 			})
 		} finally {
 			setIsLoading(false)
-			setHasInitialized(true)
 		}
 	}
 
 	useEffect(() => {
+		// Only fetch on initial mount, not when hasInitialized changes
 		fetchQuoteWithCategories()
 
 		// Add event listener for storage changes
-		const handleStorageChange = () => {
-			if (hasInitialized) {
+		const handleStorageChange = (e: StorageEvent) => {
+			// Only refetch if the categories changed
+			if (e.key === 'selectedCategories') {
 				fetchQuoteWithCategories()
 			}
 		}
@@ -66,7 +70,7 @@ export default function QuoteFetcher() {
 		return () => {
 			window.removeEventListener('storage', handleStorageChange)
 		}
-	}, [hasInitialized])
+	}, [])
 
 	const handleRefresh = async () => {
 		await fetchQuoteWithCategories()

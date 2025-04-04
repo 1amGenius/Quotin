@@ -115,18 +115,19 @@ const ClockDisplay = () => {
 		return () => clearInterval(interval)
 	}, [])
 
-	// Check if we're on desktop
+	// Check if we're on desktop and determine screen size
 	useEffect(() => {
-		const checkDesktop = () => {
-			setIsDesktop(window.innerWidth >= 768)
+		const checkScreenSize = () => {
+			const width = window.innerWidth
+			setIsDesktop(width >= 768)
 		}
 
 		// Initial check
-		checkDesktop()
+		checkScreenSize()
 
 		// Check on resize
-		window.addEventListener('resize', checkDesktop)
-		return () => window.removeEventListener('resize', checkDesktop)
+		window.addEventListener('resize', checkScreenSize)
+		return () => window.removeEventListener('resize', checkScreenSize)
 	}, [])
 
 	// Add keyboard shortcut for Escape key
@@ -159,13 +160,13 @@ const ClockDisplay = () => {
 			{/* Clock */}
 			<div
 				className={`
-                    fixed flex items-center justify-center transition-all duration-500 cursor-pointer z-[100]
-                    ${
+					fixed flex items-center justify-center transition-all duration-500 cursor-pointer z-[100]
+					${
 						expanded
-							? 'w-[20vw] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-10 rounded-xl bg-black/50 backdrop-blur-md border border-white/10 shadow-lg'
-							: 'top-4 left-4 p-3 rounded-lg bg-black/20 hover:bg-black/40 active:bg-black/60 hover:scale-105 active:scale-95 backdrop-blur-sm border border-white/10 shadow-md hover:shadow-white/5'
+							? 'md:w-[40vw] lg:w-[20vw] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-6 md:p-10 rounded-xl bg-black/50 backdrop-blur-md border border-white/10 shadow-lg'
+							: 'top-20 md:top-30 lg:top-4 left-4 p-3 rounded-lg bg-black/20 hover:bg-black/40 active:bg-black/60 hover:scale-105 active:scale-95 backdrop-blur-sm border border-white/10 shadow-md hover:shadow-white/5'
 					}
-                `}
+				`}
 				onClick={() => !expanded && setExpanded(true)}
 				style={{ pointerEvents: 'auto' }}
 			>
