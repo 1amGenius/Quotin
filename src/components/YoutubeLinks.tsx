@@ -1,13 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import {
-	TbTrash,
-	TbPlus,
-	TbBrandYoutube,
-	TbExternalLink,
-	TbX,
-} from 'react-icons/tb'
+import { TbTrash, TbPlus, TbBrandYoutube, TbExternalLink } from 'react-icons/tb'
 import {
 	Tooltip,
 	TooltipContent,
@@ -103,15 +97,6 @@ function AddLinkForm({
 		setFormTitle('')
 	}
 
-	// Clear URL field
-	const clearUrlField = () => {
-		setFormUrl('')
-		// Also clear title if it was auto-generated
-		if (formTitle === getDefaultTitle(formUrl)) {
-			setFormTitle('')
-		}
-	}
-
 	return (
 		<form onSubmit={handleSubmit}>
 			<div className='flex flex-col gap-3'>
@@ -123,26 +108,14 @@ function AddLinkForm({
 						YouTube URL
 					</label>
 					<div className='flex gap-2'>
-						<div className='relative flex-1'>
-							<Input
-								id='youtube-url'
-								placeholder='Paste YouTube URL here'
-								value={formUrl}
-								onChange={e => setFormUrl(e.target.value)}
-								className='bg-black/50 border-white/20 text-white placeholder:text-white/40 w-full pr-8'
-								disabled={isLoading}
-							/>
-							{formUrl && (
-								<button
-									type='button'
-									onClick={clearUrlField}
-									className='absolute right-2 top-1/2 -translate-y-1/2 text-white/50 hover:text-white'
-									disabled={isLoading}
-								>
-									<TbX className='h-4 w-4' />
-								</button>
-							)}
-						</div>
+						<Input
+							id='youtube-url'
+							placeholder='Paste YouTube URL here'
+							value={formUrl}
+							onChange={e => setFormUrl(e.target.value)}
+							className='bg-black/50 border-white/20 text-white placeholder:text-white/40 flex-1'
+							disabled={isLoading}
+						/>
 						<Button
 							type='submit'
 							className='bg-white/10 hover:bg-white/20 text-white hover:text-white active:text-white'
@@ -201,40 +174,6 @@ export default function YouTubeLinks() {
 	const [isLoading, setIsLoading] = useState(false)
 	const [quickOpen, setQuickOpen] = useState(false)
 
-	// Add keyboard shortcut to open dialog/drawer
-	useEffect(() => {
-		// Track pressed keys
-		const pressedKeys = new Set<string>()
-
-		const handleKeyDown = (e: KeyboardEvent) => {
-			// Add key to set (lowercase for consistency)
-			pressedKeys.add(e.key.toLowerCase())
-
-			// Check if Ctrl/Cmd + Y + L are pressed
-			if (
-				(pressedKeys.has('control') || pressedKeys.has('meta')) &&
-				pressedKeys.has('y') &&
-				pressedKeys.has('l')
-			) {
-				setIsOpen(true)
-				e.preventDefault()
-			}
-		}
-
-		const handleKeyUp = (e: KeyboardEvent) => {
-			// Remove key from set when released
-			pressedKeys.delete(e.key.toLowerCase())
-		}
-
-		window.addEventListener('keydown', handleKeyDown)
-		window.addEventListener('keyup', handleKeyUp)
-
-		return () => {
-			window.removeEventListener('keydown', handleKeyDown)
-			window.removeEventListener('keyup', handleKeyUp)
-		}
-	}, [])
-
 	// Load links from local storage
 	useEffect(() => {
 		const loadLinks = () => {
@@ -255,7 +194,7 @@ export default function YouTubeLinks() {
 
 	// Save links to local storage
 	useEffect(() => {
-		if (typeof window !== 'undefined') {
+		if (typeof window !== 'undefined' && links.length > 0) {
 			localStorage.setItem(YOUTUBE_LINKS_KEY, JSON.stringify(links))
 		}
 	}, [links])
@@ -286,40 +225,30 @@ export default function YouTubeLinks() {
 	// Modified trigger button with direct link open functionality
 	const TriggerButton = (
 		props: React.ButtonHTMLAttributes<HTMLButtonElement>
-	) => {
-		// Remove all the timer code and simplify to direct event handlers
-		return (
-			<button
-				className='h-14 w-14 rounded-full border border-white/30 bg-black/50 backdrop-blur-md flex items-center justify-center transition-all duration-300 hover:border-white/70 hover:scale-105 hover:bg-black/70'
-				onClick={() => {
-					// Handle quickOpen flag
-					if (quickOpen && links.length > 0) {
-						openYouTubeLink(links[0].url)
-						toast.success(`Opening ${links[0].title}...`)
-						setQuickOpen(false)
-						return
-					}
-
-					// Regular click opens the drawer/dialog
-					setIsOpen(true)
-				}}
-				onDoubleClick={e => {
-					e.stopPropagation()
-					e.preventDefault()
-
-					if (links.length > 0) {
-						openYouTubeLink(links[0].url)
-						toast.success(`Opening ${links[0].title}...`)
-					} else {
-						toast.error('No YouTube links saved yet')
-					}
-				}}
-				{...props}
-			>
-				<TbBrandYoutube className='h-6 w-6 text-red-500' />
-			</button>
-		)
-	}
+	) => (
+		<button
+			className='h-14 w-14 rounded-full border border-white/30 bg-black/50 backdrop-blur-md flex items-center justify-center transition-all duration-300 hover:border-white/70 hover:scale-105 hover:bg-black/70'
+			onClick={() => {
+				if (quickOpen && links.length > 0) {
+					openYouTubeLink(links[0].url)
+					toast.success(`Opening ${links[0].title}...`)
+					setQuickOpen(false)
+				}
+			}}
+			onDoubleClick={() => {
+				// Find the most recent link (first in the array since we add new links at the beginning)
+				if (links.length > 0) {
+					openYouTubeLink(links[0].url)
+					toast.success(`Opening ${links[0].title}...`)
+				} else {
+					toast.error('No YouTube links saved yet')
+				}
+			}}
+			{...props}
+		>
+			<TbBrandYoutube className='h-6 w-6 text-red-500' />
+		</button>
+	)
 
 	// Check if we have content
 	const hasContent = links.length > 0
@@ -528,7 +457,24 @@ export default function YouTubeLinks() {
 								<Tooltip>
 									<TooltipTrigger asChild>
 										<DialogTrigger asChild>
-											<div>
+											<div
+												onClick={e => {
+													if (
+														quickOpen &&
+														links.length > 0
+													) {
+														e.preventDefault()
+														e.stopPropagation()
+														openYouTubeLink(
+															links[0].url
+														)
+														toast.success(
+															`Opening ${links[0].title}...`
+														)
+														setQuickOpen(false)
+													}
+												}}
+											>
 												<TriggerButton />
 											</div>
 										</DialogTrigger>
@@ -560,30 +506,6 @@ export default function YouTubeLinks() {
 													latest link
 												</p>
 											</div>
-											<div className='flex items-center gap-2 pt-1 border-t border-white/10'>
-												<p className='text-xs text-white/50'>
-													Keyboard shortcut:{' '}
-													<span className='bg-white/10 px-1 rounded'>
-														{typeof navigator !==
-															'undefined' &&
-														navigator?.userAgent?.indexOf(
-															'Mac'
-														) !== -1 ? (
-															<>
-																<kbd>⌘</kbd> +{' '}
-																<kbd>Y</kbd> +{' '}
-																<kbd>L</kbd>
-															</>
-														) : (
-															<>
-																<kbd>Ctrl</kbd>{' '}
-																+ <kbd>Y</kbd> +{' '}
-																<kbd>L</kbd>
-															</>
-														)}
-													</span>
-												</p>
-											</div>
 										</div>
 									</TooltipContent>
 								</Tooltip>
@@ -610,7 +532,19 @@ export default function YouTubeLinks() {
 					<div className='fixed left-6 bottom-6 z-50'>
 						<div className='relative'>
 							<DrawerTrigger asChild>
-								<div>
+								<div
+									onClick={e => {
+										if (quickOpen && links.length > 0) {
+											e.preventDefault()
+											e.stopPropagation()
+											openYouTubeLink(links[0].url)
+											toast.success(
+												`Opening ${links[0].title}...`
+											)
+											setQuickOpen(false)
+										}
+									}}
+								>
 									<TriggerButton />
 								</div>
 							</DrawerTrigger>
