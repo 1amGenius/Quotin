@@ -72,6 +72,44 @@ const SearchBox = () => {
 					setSelectedEngine(engine)
 				}
 			}
+
+			// Listen for storage changes from other components (like welcome flow)
+			const handleStorageChange = (e: StorageEvent) => {
+				if (e.key === STORAGE_KEY && e.newValue) {
+					const engine = searchEngines.find(
+						eng => eng.name === e.newValue
+					)
+					if (engine) {
+						setSelectedEngine(engine)
+					}
+				}
+			}
+
+			// Listen for custom event for same-tab updates
+			const handleEngineChangeEvent = (e: CustomEvent) => {
+				const engineName = e.detail.engine
+				const engine = searchEngines.find(
+					eng => eng.name === engineName
+				)
+				if (engine) {
+					setSelectedEngine(engine)
+				}
+			}
+
+			// Add event listeners
+			window.addEventListener('storage', handleStorageChange)
+			window.addEventListener(
+				'search-engine-changed',
+				handleEngineChangeEvent as EventListener
+			)
+
+			return () => {
+				window.removeEventListener('storage', handleStorageChange)
+				window.removeEventListener(
+					'search-engine-changed',
+					handleEngineChangeEvent as EventListener
+				)
+			}
 		}
 	}, [])
 

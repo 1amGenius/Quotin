@@ -4,6 +4,7 @@ import Background from '@/components/background'
 import SearchBox from '@/components/search/SearchBox'
 import ClockDisplay from '@/components/clock/ClockDisplay'
 import Shortcuts from '@/components/shortcuts/Shortcuts'
+import WelcomePage from '@/components/welcome/WelcomePage'
 
 export default function Home() {
     return (
@@ -22,6 +23,7 @@ export default function Home() {
                 </div>
             </div>
             <ClockDisplay />
+            <WelcomePage />
         </Background>
     )
 }
