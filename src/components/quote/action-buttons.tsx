@@ -115,12 +115,18 @@ export default function ActionButtons({
 			const textToTranslate = quote.trim()
 
 			// Create Google Translate URL with the quote text
-			const googleTranslateUrl = `https://translate.google.com/?text=${encodeURIComponent(
+			const translateUrl = `https://translate.google.com/m/translate?sl=auto&tl=auto&text=${encodeURIComponent(
 				textToTranslate
 			)}`
 
-			// Open in a new tab
-			window.open(googleTranslateUrl, '_blank', 'noopener,noreferrer')
+			// Open in the same window for mobile, new tab for desktop
+			if (window.innerWidth <= 768) {
+				// Mobile devices
+				window.location.href = translateUrl
+			} else {
+				// Desktop
+				window.open(translateUrl, '_blank', 'noopener,noreferrer')
+			}
 
 			toast.success('Opened in Google Translate', {
 				position: 'bottom-right',

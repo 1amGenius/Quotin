@@ -253,7 +253,7 @@ const SearchBox = () => {
 					</div>
 
 					{/* Keyboard shortcuts - positioned at bottom left */}
-					<div className='absolute bottom-0 left-0 translate-y-full pt-2 pr-32'>
+					<div className='absolute bottom-0 left-0 translate-y-full pt-2 hidden sm:block'>
 						<p className='text-xs text-left text-white/50 max-w-[260px] break-words'>
 							{isDesktop ? (
 								<>
@@ -278,12 +278,12 @@ const SearchBox = () => {
 					</div>
 
 					{/* Search engine selector - positioned at bottom right */}
-					<div className='absolute bottom-0 right-0 translate-y-full pt-2'>
+					<div className='absolute bottom-0 right-0 translate-y-full pt-2 w-full sm:w-auto flex justify-center sm:justify-end'>
 						<Select
 							value={selectedEngine.name}
 							onValueChange={handleEngineChange}
 						>
-							<SelectTrigger className='border-0 bg-black/50 backdrop-blur-md shadow-lg text-white/80 hover:text-white/80 text-xs'>
+							<SelectTrigger className='w-40 sm:w-auto border-0 bg-black/50 backdrop-blur-md shadow-lg text-white/80 hover:text-white/80 text-xs'>
 								<SelectValue>
 									<div className='flex items-center gap-1.5'>
 										{selectedEngine.icon}

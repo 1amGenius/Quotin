@@ -181,3 +181,19 @@
 .animate-fadeOutRight {
   animation: fadeOutRight 0.3s ease-in-out forwards;
 }
+
+.move-up {
+  transform: translateY(-80px);
+  transition: transform 0.5s ease-out;
+}
+
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.5s ease-in forwards;
+}
+
+@keyframes fadeIn {
+  to {
+      opacity: 1;
+  }
+}
