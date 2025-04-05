@@ -5,6 +5,8 @@ import SearchBox from '@/components/search/SearchBox'
 import ClockDisplay from '@/components/clock/ClockDisplay'
 import Shortcuts from '@/components/shortcuts/Shortcuts'
 import WelcomePage from '@/components/welcome/WelcomePage'
+import YouTubeLinks from '@/components/YoutubeLinks'
+import PinterestLinks from '@/components/PinterestLinks'
 
 export default function Home() {
     return (
@@ -24,6 +26,11 @@ export default function Home() {
             </div>
             <ClockDisplay />
             <WelcomePage />
+            <div className='fixed left-6 bottom-6 z-50 flex items-center gap-4 p-2 rounded-full bg-black/50 backdrop-blur-md border border-white/10'>
+                <YouTubeLinks />
+                <div className='h-8 w-px bg-white/20' />
+                <PinterestLinks />
+            </div>
         </Background>
     )
 }
