@@ -1,7 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { TbTrash, TbPlus, TbBrandYoutube, TbExternalLink } from 'react-icons/tb'
+import {
+	TbTrash,
+	TbPlus,
+	TbBrandPinterest,
+	TbExternalLink,
+} from 'react-icons/tb'
 import {
 	Tooltip,
 	TooltipContent,
@@ -27,21 +32,21 @@ import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
 import Link from 'next/link'
 
-// Interface for YouTube link
-interface YouTubeLink {
+// Interface for Pinterest link
+interface PinterestLink {
 	id: string
 	title: string
 	url: string
-	type: 'video' | 'playlist'
+	type: 'pin' | 'board' | 'profile'
 	timestamp: number
 }
 
 // Storage key
-const YOUTUBE_LINKS_KEY = 'youtube-links'
+const PINTEREST_LINKS_KEY = 'pinterest-links'
 
-// YouTube link validation regex
-const YOUTUBE_REGEX = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(.+)$/i
-const YOUTUBE_PLAYLIST_REGEX = /[&?]list=([^&]+)/i
+// Pinterest link validation regex
+const PINTEREST_REGEX =
+	/^(https?:\/\/)?(www\.)?(pinterest\.(com|co\.uk|ca|de|fr|it|es|nl|ru|jp|au|nz|br|mx|ar|cl|co|pe|ve|ec|pt|gr|tr|dk|fi|no|se|pl|cz|hu|ro|bg|hr|si|sk|at|ch|ie|be|lu|mt|cy|ee|lv|lt|is|mk|al|ba|me|rs|md|ua|by|kz|ge|am|az|il|ae|sa|kw|qa|bh|om|ye|jo|lb|sy|iq|ir|af|pk|in|lk|np|bd|bt|mv|my|sg|id|ph|vn|th|kh|la|mm|kr|jp|cn|tw|hk|mo|mn)\/(.+)|pin\.it\/[a-zA-Z0-9]+)$/i
 
 // Custom hook to detect screen size
 const useMediaQuery = (query: string) => {
@@ -103,15 +108,15 @@ function AddLinkForm({
 			<div className='flex flex-col gap-3'>
 				<div>
 					<label
-						htmlFor='youtube-url'
+						htmlFor='pinterest-url'
 						className='text-sm text-white/80 mb-1 block'
 					>
-						YouTube URL
+						Pinterest URL
 					</label>
 					<div className='flex gap-2'>
 						<Input
-							id='youtube-url'
-							placeholder='Paste YouTube URL here'
+							id='pinterest-url'
+							placeholder='Paste Pinterest URL here'
 							value={formUrl}
 							onChange={e => setFormUrl(e.target.value)}
 							className='bg-black/50 border-white/20 text-white placeholder:text-white/40 flex-1'
@@ -129,13 +134,13 @@ function AddLinkForm({
 
 				<div>
 					<label
-						htmlFor='youtube-title'
+						htmlFor='pinterest-title'
 						className='text-sm text-white/80 mb-1 block'
 					>
 						Title
 					</label>
 					<Input
-						id='youtube-title'
+						id='pinterest-title'
 						placeholder='Enter custom title for this link'
 						value={formTitle}
 						onChange={e => setFormTitle(e.target.value)}
@@ -146,7 +151,7 @@ function AddLinkForm({
 			</div>
 
 			<p className='text-xs text-white/50 mt-2'>
-				Enter a YouTube video or playlist URL
+				Enter a Pinterest pin, board, or profile URL
 			</p>
 			<div className='flex justify-end mt-3'>
 				<Button
@@ -167,10 +172,27 @@ function AddLinkForm({
 	)
 }
 
-export default function YouTubeLinks() {
+// Convert pin.it URL to full Pinterest URL
+const convertPinItUrl = async (url: string): Promise<string> => {
+	if (url.includes('pin.it/')) {
+		try {
+			const response = await fetch(url, {
+				method: 'HEAD',
+				redirect: 'follow',
+			})
+			return response.url
+		} catch (error) {
+			console.error('Error converting pin.it URL:', error)
+			return url
+		}
+	}
+	return url
+}
+
+export default function PinterestLinks() {
 	const [isOpen, setIsOpen] = useState(false)
 	const isDesktop = useMediaQuery('(min-width: 768px)')
-	const [links, setLinks] = useState<YouTubeLink[]>([])
+	const [links, setLinks] = useState<PinterestLink[]>([])
 	const [isAddingLink, setIsAddingLink] = useState(false)
 	const [isLoading, setIsLoading] = useState(false)
 	const [quickOpen, setQuickOpen] = useState(false)
@@ -179,12 +201,12 @@ export default function YouTubeLinks() {
 	useEffect(() => {
 		const loadLinks = () => {
 			try {
-				const savedLinks = localStorage.getItem(YOUTUBE_LINKS_KEY)
+				const savedLinks = localStorage.getItem(PINTEREST_LINKS_KEY)
 				if (savedLinks) {
 					setLinks(JSON.parse(savedLinks))
 				}
 			} catch (error) {
-				console.error('Error loading YouTube links:', error)
+				console.error('Error loading Pinterest links:', error)
 			}
 		}
 
@@ -196,28 +218,30 @@ export default function YouTubeLinks() {
 	// Save links to local storage
 	useEffect(() => {
 		if (typeof window !== 'undefined' && links.length > 0) {
-			localStorage.setItem(YOUTUBE_LINKS_KEY, JSON.stringify(links))
+			localStorage.setItem(PINTEREST_LINKS_KEY, JSON.stringify(links))
 		}
 	}, [links])
 
-	// Validate YouTube URL
-	const isValidYouTubeUrl = (url: string): boolean => {
-		return YOUTUBE_REGEX.test(url)
+	// Validate Pinterest URL
+	const isValidPinterestUrl = (url: string): boolean => {
+		return PINTEREST_REGEX.test(url)
 	}
 
-	// Check if URL is a playlist
-	const isPlaylist = (url: string): boolean => {
-		return YOUTUBE_PLAYLIST_REGEX.test(url)
+	// Determine link type
+	const getLinkType = (url: string): 'pin' | 'board' | 'profile' => {
+		if (url.includes('/pin/')) return 'pin'
+		if (url.includes('/board/')) return 'board'
+		return 'profile'
 	}
 
-	// Remove a YouTube link
+	// Remove a Pinterest link
 	const removeLink = (id: string) => {
 		setLinks(prev => prev.filter(link => link.id !== id))
 		toast.success('Link removed successfully')
 	}
 
-	// Open a YouTube link
-	const openYouTubeLink = (url: string) => {
+	// Open a Pinterest link
+	const openPinterestLink = (url: string) => {
 		if (typeof window !== 'undefined') {
 			window.open(url, '_blank')
 		}
@@ -231,23 +255,22 @@ export default function YouTubeLinks() {
 			className='h-14 w-14 rounded-full border border-white/30 bg-black/50 backdrop-blur-md flex items-center justify-center transition-all duration-300 hover:border-white/70 hover:scale-105 hover:bg-black/70'
 			onClick={() => {
 				if (quickOpen && links.length > 0) {
-					openYouTubeLink(links[0].url)
+					openPinterestLink(links[0].url)
 					toast.success(`Opening ${links[0].title}...`)
 					setQuickOpen(false)
 				}
 			}}
 			onDoubleClick={() => {
-				// Find the most recent link (first in the array since we add new links at the beginning)
 				if (links.length > 0) {
-					openYouTubeLink(links[0].url)
+					openPinterestLink(links[0].url)
 					toast.success(`Opening ${links[0].title}...`)
 				} else {
-					toast.error('No YouTube links saved yet')
+					toast.error('No Pinterest links saved yet')
 				}
 			}}
 			{...props}
 		>
-			<TbBrandYoutube className='h-6 w-6 text-red-500' />
+			<TbBrandPinterest className='h-6 w-6 text-red-500' />
 		</button>
 	)
 
@@ -261,9 +284,9 @@ export default function YouTubeLinks() {
 			<div className='border-b border-white/10 pb-4 flex items-center justify-between'>
 				{showHeader && (
 					<div className='flex items-center gap-2'>
-						<TbBrandYoutube className='h-5 w-5 text-red-500' />
+						<TbBrandPinterest className='h-5 w-5 text-red-500' />
 						<h2 className='text-xl font-medium text-white/90'>
-							YouTube Links
+							Pinterest Links
 						</h2>
 					</div>
 				)}
@@ -273,7 +296,7 @@ export default function YouTubeLinks() {
 						variant='ghost'
 						size='icon'
 						onClick={() => setIsAddingLink(true)}
-						title='Add YouTube Link'
+						title='Add Pinterest Link'
 						className='bg-white/10 hover:bg-white/20 text-white hover:text-white active:text-white rounded-full h-10 w-10'
 					>
 						<TbPlus className='h-5 w-5' />
@@ -285,66 +308,81 @@ export default function YouTubeLinks() {
 			{isAddingLink && (
 				<div className='p-4 bg-black/20 border-b border-white/10'>
 					<h3 className='text-lg font-medium text-white/80 mb-3'>
-						Add YouTube Link
+						Add Pinterest Link
 					</h3>
 					<AddLinkForm
 						onSubmit={(url, title) => {
-							if (!isValidYouTubeUrl(url)) {
-								toast.error('Please enter a valid YouTube URL')
+							if (!isValidPinterestUrl(url)) {
+								toast.error(
+									'Please enter a valid Pinterest URL'
+								)
 								return
 							}
 
 							setIsLoading(true)
 
-							try {
-								const linkType = isPlaylist(url)
-									? 'playlist'
-									: 'video'
-								// Use the manually entered title
-								const finalTitle =
-									title.trim() ||
-									(linkType === 'playlist'
-										? 'YouTube Playlist'
-										: 'YouTube Video')
+							// Convert pin.it URL if necessary
+							convertPinItUrl(url)
+								.then(convertedUrl => {
+									try {
+										const linkType =
+											getLinkType(convertedUrl)
+										const finalTitle =
+											title.trim() ||
+											(linkType === 'pin'
+												? 'Pinterest Pin'
+												: linkType === 'board'
+												? 'Pinterest Board'
+												: 'Pinterest Profile')
 
-								const newLink: YouTubeLink = {
-									id: `yt-${Date.now()}`,
-									title: finalTitle,
-									url: url,
-									type: linkType,
-									timestamp: Date.now(),
-								}
+										const newLink: PinterestLink = {
+											id: `pin-${Date.now()}`,
+											title: finalTitle,
+											url: convertedUrl,
+											type: linkType,
+											timestamp: Date.now(),
+										}
 
-								setLinks(prev => [newLink, ...prev])
-								setIsAddingLink(false)
-								toast.success(
-									`${
-										linkType === 'playlist'
-											? 'Playlist'
-											: 'Video'
-									} added successfully`
-								)
-							} catch (error) {
-								console.error(
-									'Error adding YouTube link:',
-									error
-								)
-								toast.error(
-									'Failed to add link. Please try again.'
-								)
-							} finally {
-								setIsLoading(false)
-							}
+										setLinks(prev => [newLink, ...prev])
+										setIsAddingLink(false)
+										toast.success(
+											`${finalTitle} added successfully`
+										)
+									} catch (error) {
+										console.error(
+											'Error adding Pinterest link:',
+											error
+										)
+										toast.error(
+											'Failed to add link. Please try again.'
+										)
+									} finally {
+										setIsLoading(false)
+									}
+								})
+								.catch(error => {
+									console.error(
+										'Error converting URL:',
+										error
+									)
+									toast.error(
+										'Failed to process URL. Please try again.'
+									)
+									setIsLoading(false)
+								})
 						}}
 						onCancel={() => {
 							setIsAddingLink(false)
 						}}
 						isLoading={isLoading}
-						getDefaultTitle={url =>
-							isPlaylist(url)
-								? 'YouTube Playlist'
-								: 'YouTube Video'
-						}
+						getDefaultTitle={url => {
+							const type = getLinkType(url)
+							return type === 'pin'
+								? 'Pinterest Pin'
+								: type === 'board'
+								? 'Pinterest Board'
+								: 'Pinterest Profile'
+						}}
 					/>
 				</div>
 			)}
@@ -352,21 +390,21 @@ export default function YouTubeLinks() {
 			{!hasContent && !isAddingLink ? (
 				<div className='flex flex-col items-center justify-center py-16 px-4'>
 					<div className='w-20 h-20 rounded-full border-2 border-white/40 flex items-center justify-center mb-6'>
-						<TbBrandYoutube className='h-10 w-10 text-red-500' />
+						<TbBrandPinterest className='h-10 w-10 text-red-500' />
 					</div>
 					<h3 className='text-xl font-medium text-white/80 text-center mb-2'>
-						No YouTube links yet
+						No Pinterest links yet
 					</h3>
 					<p className='text-white/50 text-center max-w-md mb-6'>
-						Add YouTube videos or playlists to quick access them
-						later
+						Add Pinterest pins, boards, or profiles to quick access
+						them later
 					</p>
 					<Button
 						onClick={() => setIsAddingLink(true)}
 						className='bg-white/10 hover:bg-white/20 text-white flex items-center gap-2'
 					>
 						<TbPlus className='h-4 w-4' />
-						Add YouTube Link
+						Add Pinterest Link
 					</Button>
 				</div>
 			) : (
@@ -388,15 +426,17 @@ export default function YouTubeLinks() {
 									<div
 										className='flex-1 cursor-pointer overflow-hidden mr-2'
 										onClick={() =>
-											openYouTubeLink(link.url)
+											openPinterestLink(link.url)
 										}
 									>
 										<div className='flex items-center gap-2'>
-											<TbBrandYoutube
+											<TbBrandPinterest
 												className={`h-5 w-5 flex-shrink-0 ${
-													link.type === 'playlist'
+													link.type === 'pin'
+														? 'text-red-500'
+														: link.type === 'board'
 														? 'text-blue-400'
-														: 'text-red-500'
+														: 'text-green-400'
 												}`}
 											/>
 											<h4 className='font-medium truncate'>
@@ -412,7 +452,7 @@ export default function YouTubeLinks() {
 											variant='ghost'
 											size='icon'
 											onClick={() =>
-												openYouTubeLink(link.url)
+												openPinterestLink(link.url)
 											}
 											className='bg-white/10 hover:bg-white/20 text-white hover:text-white active:text-white rounded-full h-8 w-8 flex-shrink-0'
 										>
@@ -439,10 +479,10 @@ export default function YouTubeLinks() {
 				<p className='text-xs text-white/50'>
 					<Link
 						target='_blank'
-						href='https://www.youtube.com'
+						href='https://www.pinterest.com/'
 						className='text-red-500 underline transition-colors duration-300 ease-in-out hover:no-underline hover:text-white/50'
 					>
-						YouTube
+						Pinterest
 					</Link>{' '}
 					Quick Links
 				</p>
@@ -450,7 +490,7 @@ export default function YouTubeLinks() {
 					className='text-white/70 hover:text-white text-sm'
 					onClick={() => setIsAddingLink(true)}
 				>
-					{hasContent ? 'Add another link' : 'Add YouTube link'}
+					{hasContent ? 'Add another link' : 'Add Pinterest link'}
 				</button>
 			</div>
 		</>
@@ -475,7 +515,7 @@ export default function YouTubeLinks() {
 													) {
 														e.preventDefault()
 														e.stopPropagation()
-														openYouTubeLink(
+														openPinterestLink(
 															links[0].url
 														)
 														toast.success(
@@ -491,7 +531,7 @@ export default function YouTubeLinks() {
 									</TooltipTrigger>
 									<TooltipContent className='bg-black/80 text-white border border-white/20'>
 										<div className='space-y-1'>
-											<p>YouTube Links</p>
+											<p>Pinterest Links</p>
 											<div className='flex items-center gap-2 pt-1 border-t border-white/10'>
 												<button
 													className='text-xs text-white/70 hover:text-white bg-white/10 py-0.5 px-2 rounded-sm'
@@ -499,12 +539,12 @@ export default function YouTubeLinks() {
 														e.stopPropagation()
 														setQuickOpen(true)
 														if (links.length > 0) {
-															openYouTubeLink(
+															openPinterestLink(
 																links[0].url
 															)
 														} else {
 															toast.error(
-																'No YouTube links saved yet'
+																'No Pinterest links saved yet'
 															)
 														}
 													}}
@@ -529,8 +569,8 @@ export default function YouTubeLinks() {
 					>
 						<DialogHeader className='p-0 text-left'>
 							<DialogTitle className='text-xl font-medium text-white/90 flex items-center gap-2 pb-2'>
-								<TbBrandYoutube className='h-5 w-5 text-red-500' />{' '}
-								YouTube Links
+								<TbBrandPinterest className='h-5 w-5 text-red-500' />{' '}
+								Pinterest Links
 							</DialogTitle>
 							<LinksContent showHeader={false} />
 						</DialogHeader>
@@ -547,7 +587,7 @@ export default function YouTubeLinks() {
 										if (quickOpen && links.length > 0) {
 											e.preventDefault()
 											e.stopPropagation()
-											openYouTubeLink(links[0].url)
+											openPinterestLink(links[0].url)
 											toast.success(
 												`Opening ${links[0].title}...`
 											)
@@ -564,8 +604,8 @@ export default function YouTubeLinks() {
 					<DrawerContent className='bg-black/90 text-white backdrop-blur-md border-t border-white/10 max-w-full'>
 						<DrawerHeader className='p-4'>
 							<DrawerTitle className='text-xl font-medium text-white/90 flex items-center gap-2 pb-2 truncate'>
-								<TbBrandYoutube className='h-5 w-5 text-red-500 flex-shrink-0' />{' '}
-								YouTube Links
+								<TbBrandPinterest className='h-5 w-5 text-red-500 flex-shrink-0' />{' '}
+								Pinterest Links
 							</DrawerTitle>
 							<LinksContent showHeader={false} />
 						</DrawerHeader>
