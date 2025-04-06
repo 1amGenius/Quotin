@@ -5,7 +5,7 @@ import SearchBox from '@/components/search/SearchBox'
 import ClockDisplay from '@/components/clock/ClockDisplay'
 import Shortcuts from '@/components/shortcuts/Shortcuts'
 import WelcomePage from '@/components/welcome/WelcomePage'
-import YouTubeLinks from '@/components/YoutubeLinks'
+import YouTubeLinks from '@/components/YouTubeLinks'
 import PinterestLinks from '@/components/PinterestLinks'
 
 export default function Home() {
