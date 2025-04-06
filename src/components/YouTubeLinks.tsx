@@ -25,6 +25,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
+import Link from 'next/link'
 
 // Interface for YouTube link
 interface YouTubeLink {
@@ -435,7 +436,16 @@ export default function YouTubeLinks() {
 
 			{/* Footer */}
 			<div className='border-t border-white/10 bg-black/80 backdrop-blur-md p-3 flex justify-between items-center mt-auto'>
-				<p className='text-xs text-white/50'>YouTube Quick Links</p>
+				<p className='text-xs text-white/50'>
+					<Link
+						target='_blank'
+						href='https://www.youtube.com'
+						className='text-red-500 underline transition-colors duration-300 ease-in-out hover:no-underline hover:text-white/50'
+					>
+						YouTube
+					</Link>{' '}
+					Quick Links
+				</p>
 				<button
 					className='text-white/70 hover:text-white text-sm'
 					onClick={() => setIsAddingLink(true)}
@@ -451,7 +461,7 @@ export default function YouTubeLinks() {
 			{isDesktop ? (
 				// Dialog for desktop
 				<Dialog open={isOpen} onOpenChange={setIsOpen}>
-					<div className='fixed left-6 bottom-6 z-50'>
+					<div className='relative'>
 						<div className='relative'>
 							<TooltipProvider>
 								<Tooltip>
@@ -529,7 +539,7 @@ export default function YouTubeLinks() {
 			) : (
 				// Drawer for mobile
 				<Drawer open={isOpen} onOpenChange={setIsOpen}>
-					<div className='fixed left-6 bottom-6 z-50'>
+					<div className='relative'>
 						<div className='relative'>
 							<DrawerTrigger asChild>
 								<div
