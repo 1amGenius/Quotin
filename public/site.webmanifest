@@ -1,0 +1,20 @@
+{
+    "name": "Quotin",
+    "short_name": "Quotin",
+    "description": "Your stylish start page",
+    "icons": [
+        {
+            "src": "/PcFavicon.png",
+            "sizes": "32x32",
+            "type": "image/png"
+        },
+        {
+            "src": "/AppleFavicon.png",
+            "sizes": "180x180",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#000000",
+    "background_color": "#000000",
+    "display": "standalone"
+} 

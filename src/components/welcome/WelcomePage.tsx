@@ -14,6 +14,7 @@ import {
 	TbCheck,
 	TbArrowRight,
 	TbSparkles,
+	TbBrandPinterest,
 } from 'react-icons/tb'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -32,8 +33,13 @@ const STEPS = [
 	{ id: 'colors', label: 'Colors', icon: <TbPalette className='h-5 w-5' /> },
 	{
 		id: 'youtube',
-		label: 'YouTube Links',
-		icon: <TbBrandYoutube className='h-5 w-5' />,
+		label: 'Quick Links',
+		icon: (
+			<div className='flex items-center gap-0.5'>
+				<TbBrandYoutube className='h-4 w-4' />
+				<TbBrandPinterest className='h-4 w-4' />
+			</div>
+		),
 	},
 	{
 		id: 'search',
@@ -186,7 +192,10 @@ export default function WelcomePage() {
 												) : step.id === 'colors' ? (
 													<TbPalette className='h-4 w-4' />
 												) : step.id === 'youtube' ? (
-													<TbBrandYoutube className='h-4 w-4' />
+													<div className='flex items-center gap-0.5'>
+														<TbBrandYoutube className='h-3 w-3' />
+														<TbBrandPinterest className='h-3 w-3' />
+													</div>
 												) : (
 													<FaGoogle className='h-3 w-3' />
 												)}
@@ -257,29 +266,37 @@ export default function WelcomePage() {
 							{currentStepId === 'youtube' && (
 								<div className='youtube-step pb-8 sm:pb-12'>
 									<h2 className='text-xl sm:text-2xl font-medium text-white/90 mb-2 sm:mb-4'>
-										YouTube Links
+										Quick Links
 									</h2>
 									<p className='text-sm sm:text-base text-white/60 mb-4 sm:mb-6'>
-										Add YouTube videos or playlists for
-										quick access from the dashboard.
+										Add YouTube videos, Pinterest pins, or
+										boards for quick access from the
+										dashboard.
 									</p>
 									<div className='youtube-content'>
 										{/* We'll use a simpler welcome version */}
 										<div className='p-3 sm:p-4 bg-black/20 border border-white/10 rounded-lg'>
 											<p className='text-xs sm:text-sm text-white/60 text-center mb-4 sm:mb-6'>
-												You can add YouTube videos and
-												playlists for quick access on
-												your dashboard.
+												You can add YouTube videos,
+												Pinterest pins, and boards for
+												quick access on your dashboard.
 											</p>
-											<div className='flex justify-center'>
+											<div className='flex justify-center items-center gap-4'>
 												<div className='w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 border-white/20 flex items-center justify-center mb-4 sm:mb-6'>
 													<TbBrandYoutube className='h-6 w-6 sm:h-8 sm:w-8 text-red-500' />
 												</div>
+												<div className='text-white/30 text-xl sm:text-2xl mb-4 sm:mb-6'>
+													|
+												</div>
+												<div className='w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 border-white/20 flex items-center justify-center mb-4 sm:mb-6'>
+													<TbBrandPinterest className='h-6 w-6 sm:h-8 sm:w-8 text-red-500' />
+												</div>
 											</div>
 											<p className='text-xs sm:text-sm text-white/70 text-center'>
-												Use the YouTube button in the
-												bottom left corner of your
-												dashboard to add videos anytime.
+												Use the YouTube and Pinterest
+												buttons in the bottom left
+												corner of your dashboard to add
+												content anytime.
 											</p>
 										</div>
 										<div className='mt-4 sm:mt-6 flex justify-end'>

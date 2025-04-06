@@ -18,8 +18,29 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-    title: 'Quotin',
-    description: 'Your personal quote collection and inspiration hub'
+    title: 'Quotin - Stylish start page',
+    description:
+        'Quotin is a new start page that helps you get started with your day. Collect your favorite quotes, images, and links in one place. And add shortcuts to your favorite websites for easy access.',
+    icons: {
+        icon: [
+            { url: '/PcFavicon.png', sizes: '32x32', type: 'image/png' },
+            { url: '/PcFavicon.png', sizes: '16x16', type: 'image/png' },
+            { url: '/favicon.ico', sizes: 'any' }
+        ],
+        apple: [
+            { url: '/AppleFavicon.png', sizes: '180x180', type: 'image/png' }
+        ],
+        shortcut: '/AppleFavicon.png',
+        other: [
+            { rel: 'apple-touch-icon-precomposed', url: '/AppleFavicon.png' },
+            {
+                rel: 'mask-icon',
+                url: '/safari-pinned-tab.svg',
+                color: '#000000'
+            }
+        ]
+    },
+    manifest: '/site.webmanifest'
 }
 
 export default function RootLayout({
