@@ -62,14 +62,14 @@ export default function TextContainer({
 	const quoteToCopy = `${quote.text} -${quote.name}`
 
 	return (
-		<div className='relative z-20 flex flex-col items-center justify-center'>
-			<div className='group z-30 bg-black/10 p-6 rounded-2xl backdrop-blur-[100px] border border-white/10 shadow-sm shadow-white/10 relative min-w-[85vw] md:min-w-[800px] max-w-[85vw] md:max-w-[800px] mb-12 md:mb-0 lg:mb-0 before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-white/10 before:via-transparent before:to-transparent before:pointer-events-none'>
+		<div className='relative z-0 flex flex-col items-center justify-center'>
+			<div className='group z-0 bg-black/10 p-6 rounded-2xl backdrop-blur-[100px] border border-white/10 shadow-sm shadow-white/10 relative min-w-[85vw] md:min-w-[800px] max-w-[85vw] md:max-w-[800px] mb-7 md:mb-0 lg:mb-0 before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-white/10 before:via-transparent before:to-transparent before:pointer-events-none'>
 				<ActionButtons
 					onRefresh={handleRefresh}
 					quoteToCopy={quoteToCopy}
 				/>
 				<AnimatedQuote show={showQuotes} position='left' />
-				<div className='min-h-[100px] md:min-h-[120px]'>
+				<div className='min-h-[100px] md:min-h-[120px] max-h-[35vh] sm:max-h-none overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent sm:overflow-visible'>
 					{startTyping && quote && (
 						<Typewriter
 							text={quote.text}

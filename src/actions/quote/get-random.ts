@@ -38,10 +38,78 @@ const FALLBACK_QUOTES: Quote[] = [
     {
         text: "Stay hungry, stay foolish.",
         name: "Stewart Brand"
+    },
+    {
+        text: "Life is what happens when you're busy making other plans.",
+        name: "John Lennon"
+    },
+    {
+        text: "The purpose of our lives is to be happy.",
+        name: "Dalai Lama"
+    },
+    {
+        text: "Get busy living or get busy dying.",
+        name: "Stephen King"
+    },
+    {
+        text: "You only live once, but if you do it right, once is enough.",
+        name: "Mae West"
+    },
+    {
+        text: "In the end, we only regret the chances we didn't take.",
+        name: "Lewis Carroll"
+    },
+    {
+        text: "The greatest glory in living lies not in never falling, but in rising every time we fall.",
+        name: "Nelson Mandela"
+    },
+    {
+        text: "The future belongs to those who believe in the beauty of their dreams.",
+        name: "Eleanor Roosevelt"
+    },
+    {
+        text: "Do not dwell in the past, do not dream of the future, concentrate the mind on the present moment.",
+        name: "Buddha"
+    },
+    {
+        text: "You miss 100% of the shots you don't take.",
+        name: "Wayne Gretzky"
+    },
+    {
+        text: "The only limit to our realization of tomorrow will be our doubts of today.",
+        name: "Franklin D. Roosevelt"
+    },
+    {
+        text: "Act as if what you do makes a difference. It does.",
+        name: "William James"
+    },
+    {
+        text: "Success is not final, failure is not fatal: It is the courage to continue that counts.",
+        name: "Winston S. Churchill"
+    },
+    {
+        text: "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
+        name: "Ralph Waldo Emerson"
+    },
+    {
+        text: "The best revenge is massive success.",
+        name: "Frank Sinatra"
+    },
+    {
+        text: "Believe you can and you're halfway there.",
+        name: "Theodore Roosevelt"
+    },
+    {
+        text: "Everything you’ve ever wanted is on the other side of fear.",
+        name: "George Addair"
+    },
+    {
+        text: "Opportunities don't happen, you create them.",
+        name: "Chris Grosser"
     }
 ];
 
-export async function getRandomQuote(categories?: string[]): Promise<Quote> {
+export async function getRandomQuote(categories?: string[], screenSize?: 'mobile' | 'desktop'): Promise<Quote> {
     // Get a random fallback quote
     const getRandomFallbackQuote = (): Quote => {
         const randomIndex = Math.floor(Math.random() * FALLBACK_QUOTES.length);
@@ -55,7 +123,14 @@ export async function getRandomQuote(categories?: string[]): Promise<Quote> {
     while (retries <= MAX_RETRIES) {
         try {
             // Build API URL with categories if provided
-            let apiUrl = 'https://api.quotable.io/quotes/random?minLength=77&maxLength=170';
+            let apiUrl = 'https://api.quotable.io/quotes/random?';
+            
+            // Adjust min and max length based on screen size
+            if (screenSize === 'mobile') {
+                apiUrl += 'minLength=20&maxLength=100';
+            } else {
+                apiUrl += 'minLength=77&maxLength=170';
+            }
             
             // Add tags parameter if categories are provided
             if (categories && categories.length > 0) {

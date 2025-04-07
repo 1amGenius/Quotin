@@ -41,6 +41,7 @@ const SearchBox = () => {
 	const [isFocused, setIsFocused] = useState(false)
 	const [suggestions, setSuggestions] = useState<string[]>([])
 	const [showSuggestions, setShowSuggestions] = useState(false)
+	const [selectedIndex, setSelectedIndex] = useState(0)
 	const [isDesktop, setIsDesktop] = useState(true)
 	const [isMedium, setIsMedium] = useState(false)
 	const [selectedEngine, setSelectedEngine] = useState(searchEngines[0])
@@ -159,9 +160,53 @@ const SearchBox = () => {
 		}
 	}, [])
 
+	// Reset selected index when suggestions change
+	useEffect(() => {
+		setSelectedIndex(0)
+	}, [suggestions])
+
+	// Handle keyboard navigation
+	const handleKeyDown = (e: React.KeyboardEvent) => {
+		if (!showSuggestions || suggestions.length === 0) return
+
+		switch (e.key) {
+			case 'ArrowDown':
+				e.preventDefault()
+				setSelectedIndex(prev =>
+					prev < suggestions.length - 1 ? prev + 1 : prev
+				)
+				break
+			case 'ArrowUp':
+				e.preventDefault()
+				setSelectedIndex(prev => (prev > 0 ? prev - 1 : prev))
+				break
+			case 'Tab':
+				e.preventDefault()
+				if (e.shiftKey) {
+					setSelectedIndex(prev => (prev > 0 ? prev - 1 : prev))
+				} else {
+					setSelectedIndex(prev =>
+						prev < suggestions.length - 1 ? prev + 1 : prev
+					)
+				}
+				break
+			case 'Enter':
+				e.preventDefault()
+				if (showSuggestions && suggestions[selectedIndex]) {
+					handleSuggestionClick(suggestions[selectedIndex])
+				} else {
+					handleSearch(e)
+				}
+				break
+			case 'Escape':
+				setShowSuggestions(false)
+				break
+		}
+	}
+
 	// Add keyboard shortcut for focusing the search box
 	useEffect(() => {
-		const handleKeyDown = (event: KeyboardEvent) => {
+		const handleGlobalKeyDown = (event: KeyboardEvent) => {
 			// Check for Ctrl+K or Command+K
 			if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
 				event.preventDefault() // Prevent default browser behavior
@@ -169,9 +214,9 @@ const SearchBox = () => {
 			}
 		}
 
-		document.addEventListener('keydown', handleKeyDown)
+		document.addEventListener('keydown', handleGlobalKeyDown)
 		return () => {
-			document.removeEventListener('keydown', handleKeyDown)
+			document.removeEventListener('keydown', handleGlobalKeyDown)
 		}
 	}, [])
 
@@ -237,6 +282,7 @@ const SearchBox = () => {
 								setShowSuggestions(true)
 							}}
 							onBlur={() => setIsFocused(false)}
+							onKeyDown={handleKeyDown}
 							placeholder='Search the web...'
 							className='w-full py-3 px-4 bg-transparent text-white placeholder-white/50 focus:outline-none'
 						/>
@@ -310,12 +356,16 @@ const SearchBox = () => {
 
 					{/* Suggestions dropdown */}
 					{showSuggestions && suggestions.length > 0 && (
-						<div className='absolute w-full mt-2 bg-black/50 backdrop-blur-3xl border border-white/10 rounded-xl overflow-hidden shadow-lg z-40'>
+						<div className='fixed sm:absolute w-[calc(100vw-2rem)] sm:w-full left-1/2 sm:left-0 -translate-x-1/2 sm:translate-x-0 top-16 sm:top-auto sm:mt-2 bg-black/90 backdrop-blur-3xl border border-white/10 rounded-xl overflow-hidden shadow-lg z-[60]'>
 							{suggestions.map((suggestion, index) => (
 								<button
 									key={index}
 									type='button'
-									className='w-full px-4 py-2 text-white hover:bg-white/10 cursor-pointer transition-colors duration-200 flex items-center text-left'
+									className={`w-full px-4 py-2 text-white hover:bg-white/10 cursor-pointer transition-colors duration-200 flex items-center text-left ${
+										index === selectedIndex
+											? 'bg-white/10'
+											: ''
+									}`}
 									onClick={e => {
 										e.preventDefault()
 										e.stopPropagation()

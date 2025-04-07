@@ -13,6 +13,22 @@ interface Quote {
 export default function QuoteFetcher() {
 	const [quote, setQuote] = useState<Quote | null>(null)
 	const [isLoading, setIsLoading] = useState(true)
+	const [isMobile, setIsMobile] = useState(false)
+
+	useEffect(() => {
+		const checkMobile = () => {
+			setIsMobile(window.innerWidth < 768)
+		}
+
+		// Initial check
+		checkMobile()
+
+		// Add resize listener
+		window.addEventListener('resize', checkMobile)
+
+		// Cleanup
+		return () => window.removeEventListener('resize', checkMobile)
+	}, [])
 
 	const fetchQuoteWithCategories = async () => {
 		setIsLoading(true)
@@ -30,9 +46,10 @@ export default function QuoteFetcher() {
 		}
 
 		try {
-			// Use the server action for all requests, passing categories if available
+			// Use the server action for all requests, passing categories and screen size
 			const serverQuote = await getRandomQuote(
-				categories.length > 0 ? categories : undefined
+				categories.length > 0 ? categories : undefined,
+				isMobile ? 'mobile' : 'desktop'
 			)
 			console.log(
 				`[${new Date().toLocaleTimeString()}] Set quote:`,
@@ -54,7 +71,7 @@ export default function QuoteFetcher() {
 	}
 
 	useEffect(() => {
-		// Only fetch on initial mount, not when hasInitialized changes
+		// Fetch quote when component mounts or screen size changes
 		fetchQuoteWithCategories()
 
 		// Add event listener for storage changes
@@ -70,7 +87,7 @@ export default function QuoteFetcher() {
 		return () => {
 			window.removeEventListener('storage', handleStorageChange)
 		}
-	}, [])
+	}, [isMobile]) // Add isMobile to dependencies
 
 	const handleRefresh = async () => {
 		await fetchQuoteWithCategories()
