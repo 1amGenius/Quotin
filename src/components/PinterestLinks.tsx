@@ -197,6 +197,25 @@ export default function PinterestLinks() {
 	const [isLoading, setIsLoading] = useState(false)
 	const [quickOpen, setQuickOpen] = useState(false)
 
+	// Add keyboard shortcut for opening Pinterest links
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			// Check for Ctrl+P or Command+P
+			if (
+				(event.ctrlKey || event.metaKey) &&
+				event.key.toLowerCase() === 'p'
+			) {
+				event.preventDefault() // Prevent default browser behavior
+				setIsOpen(true)
+			}
+		}
+
+		document.addEventListener('keydown', handleKeyDown)
+		return () => {
+			document.removeEventListener('keydown', handleKeyDown)
+		}
+	}, [])
+
 	// Load links from local storage
 	useEffect(() => {
 		const loadLinks = () => {

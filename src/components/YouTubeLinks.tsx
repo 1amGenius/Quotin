@@ -175,6 +175,25 @@ export default function YouTubeLinks() {
 	const [isLoading, setIsLoading] = useState(false)
 	const [quickOpen, setQuickOpen] = useState(false)
 
+	// Add keyboard shortcut for opening YouTube links
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			// Check for Ctrl+Y or Command+Y
+			if (
+				(event.ctrlKey || event.metaKey) &&
+				event.key.toLowerCase() === 'y'
+			) {
+				event.preventDefault() // Prevent default browser behavior
+				setIsOpen(true)
+			}
+		}
+
+		document.addEventListener('keydown', handleKeyDown)
+		return () => {
+			document.removeEventListener('keydown', handleKeyDown)
+		}
+	}, [])
+
 	// Load links from local storage
 	useEffect(() => {
 		const loadLinks = () => {

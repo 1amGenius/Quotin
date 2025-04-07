@@ -15,8 +15,12 @@ import {
 	TbArrowRight,
 	TbSparkles,
 	TbBrandPinterest,
+	TbNotes,
 } from 'react-icons/tb'
 import { motion, AnimatePresence } from 'framer-motion'
+import TodoNotes from '@/components/TodoNotes'
+import YouTubeLinks from '@/components/YouTubeLinks'
+import PinterestLinks from '@/components/PinterestLinks'
 
 // Define steps
 const STEPS = [
@@ -32,7 +36,7 @@ const STEPS = [
 	},
 	{ id: 'colors', label: 'Colors', icon: <TbPalette className='h-5 w-5' /> },
 	{
-		id: 'youtube',
+		id: 'quicklinks',
 		label: 'Quick Links',
 		icon: (
 			<div className='flex items-center gap-0.5'>
@@ -40,6 +44,11 @@ const STEPS = [
 				<TbBrandPinterest className='h-4 w-4' />
 			</div>
 		),
+	},
+	{
+		id: 'notes',
+		label: 'Notes & Todos',
+		icon: <TbNotes className='h-4 w-4' />,
 	},
 	{
 		id: 'search',
@@ -82,7 +91,7 @@ export default function WelcomePage() {
 		if (introCompleted) completed.push('intro')
 		if (categoriesExist) completed.push('categories')
 		if (colorsExist) completed.push('colors')
-		if (youtubeLinksExist) completed.push('youtube')
+		if (youtubeLinksExist) completed.push('quicklinks')
 		if (searchEngineExists) completed.push('search')
 
 		setCompletedSteps(completed)
@@ -191,11 +200,13 @@ export default function WelcomePage() {
 													<TbCategory className='h-4 w-4' />
 												) : step.id === 'colors' ? (
 													<TbPalette className='h-4 w-4' />
-												) : step.id === 'youtube' ? (
+												) : step.id === 'quicklinks' ? (
 													<div className='flex items-center gap-0.5'>
 														<TbBrandYoutube className='h-3 w-3' />
 														<TbBrandPinterest className='h-3 w-3' />
 													</div>
+												) : step.id === 'notes' ? (
+													<TbNotes className='h-3 w-3' />
 												) : (
 													<FaGoogle className='h-3 w-3' />
 												)}
@@ -263,7 +274,7 @@ export default function WelcomePage() {
 								/>
 							)}
 
-							{currentStepId === 'youtube' && (
+							{currentStepId === 'quicklinks' && (
 								<div className='youtube-step pb-8 sm:pb-12'>
 									<h2 className='text-xl sm:text-2xl font-medium text-white/90 mb-2 sm:mb-4'>
 										Quick Links
@@ -298,13 +309,42 @@ export default function WelcomePage() {
 												corner of your dashboard to add
 												content anytime.
 											</p>
+											<div className='mt-4 p-3 bg-black/30 rounded-lg'>
+												<h3 className='text-sm font-medium text-white/80 mb-2'>
+													Keyboard Shortcuts:
+												</h3>
+												<ul className='text-xs text-white/60 space-y-1'>
+													<li>
+														•{' '}
+														<kbd className='px-1.5 py-0.5 bg-white/10 rounded'>
+															Ctrl
+														</kbd>{' '}
+														+{' '}
+														<kbd className='px-1.5 py-0.5 bg-white/10 rounded'>
+															Y
+														</kbd>{' '}
+														- Open YouTube Links
+													</li>
+													<li>
+														•{' '}
+														<kbd className='px-1.5 py-0.5 bg-white/10 rounded'>
+															Ctrl
+														</kbd>{' '}
+														+{' '}
+														<kbd className='px-1.5 py-0.5 bg-white/10 rounded'>
+															P
+														</kbd>{' '}
+														- Open Pinterest Links
+													</li>
+												</ul>
+											</div>
 										</div>
 										<div className='mt-4 sm:mt-6 flex justify-end'>
 											<button
 												className='px-4 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-base rounded-md bg-white/10 text-white hover:bg-white/20 transition-all flex items-center gap-2 group'
 												onClick={() =>
 													handleStepComplete(
-														'youtube'
+														'quicklinks'
 													)
 												}
 											>
@@ -312,6 +352,75 @@ export default function WelcomePage() {
 												<TbArrowRight className='h-3 w-3 sm:h-4 sm:w-4 transform transition-transform group-hover:translate-x-1' />
 											</button>
 										</div>
+									</div>
+									<div className='mt-4 flex justify-center items-center gap-4'>
+										<YouTubeLinks />
+										<div className='h-8 w-px bg-white/10' />
+										<PinterestLinks />
+									</div>
+								</div>
+							)}
+
+							{currentStepId === 'notes' && (
+								<div className='notes-step pb-8 sm:pb-12'>
+									<h2 className='text-xl sm:text-2xl font-medium text-white/90 mb-2 sm:mb-4'>
+										Notes & Todos
+									</h2>
+									<p className='text-sm sm:text-base text-white/60 mb-4 sm:mb-6'>
+										Keep track of your thoughts and tasks
+										with quick notes and todos.
+									</p>
+									<div className='notes-content'>
+										<div className='p-3 sm:p-4 bg-black/20 border border-white/10 rounded-lg'>
+											<p className='text-xs sm:text-sm text-white/60 text-center mb-4 sm:mb-6'>
+												Create and manage your notes and
+												todos directly from your
+												dashboard.
+											</p>
+											<div className='flex justify-center items-center gap-4'>
+												<div className='w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 border-white/20 flex items-center justify-center mb-4 sm:mb-6'>
+													<TbNotes className='h-6 w-6 sm:h-8 sm:w-8 text-emerald-400' />
+												</div>
+											</div>
+											<p className='text-xs sm:text-sm text-white/70 text-center'>
+												Use the Notes button in the
+												bottom right corner of your
+												dashboard to access your notes
+												and todos.
+											</p>
+											<div className='mt-4 p-3 bg-black/30 rounded-lg'>
+												<h3 className='text-sm font-medium text-white/80 mb-2'>
+													Keyboard Shortcuts:
+												</h3>
+												<ul className='text-xs text-white/60 space-y-1'>
+													<li>
+														•{' '}
+														<kbd className='px-1.5 py-0.5 bg-white/10 rounded'>
+															Ctrl
+														</kbd>{' '}
+														+{' '}
+														<kbd className='px-1.5 py-0.5 bg-white/10 rounded'>
+															Q
+														</kbd>{' '}
+														- Open Notes & Todos
+													</li>
+												</ul>
+											</div>
+										</div>
+										<div className='mt-4 sm:mt-6 flex justify-end'>
+											<button
+												className='px-4 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-base rounded-md bg-white/10 text-white hover:bg-white/20 transition-all flex items-center gap-2 group'
+												onClick={() =>
+													handleStepComplete('notes')
+												}
+											>
+												Continue
+												<TbArrowRight className='h-3 w-3 sm:h-4 sm:w-4 transform transition-transform group-hover:translate-x-1' />
+											</button>
+										</div>
+									</div>
+									<div className='mt-4'>
+										<TodoNotes />
 									</div>
 								</div>
 							)}

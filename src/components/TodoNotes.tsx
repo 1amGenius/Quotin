@@ -32,6 +32,25 @@ export default function TodoNotes() {
 	const isDesktop = useMediaQuery('(min-width: 768px)')
 	const [activeTab, setActiveTab] = useState('todo')
 
+	// Add keyboard shortcut for opening TodoNotes
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			// Check for Ctrl+Q or Command+Q
+			if (
+				(event.ctrlKey || event.metaKey) &&
+				event.key.toLowerCase() === 'q'
+			) {
+				event.preventDefault() // Prevent default browser behavior
+				setIsOpen(true)
+			}
+		}
+
+		document.addEventListener('keydown', handleKeyDown)
+		return () => {
+			document.removeEventListener('keydown', handleKeyDown)
+		}
+	}, [])
+
 	// Common trigger button for both modes
 	const TriggerButton = ({
 		...props
