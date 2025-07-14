@@ -134,4 +134,4 @@ Project Link: [https://github.com/1amGenius/quotin](https://github.com/1amGenius
 
 ---
 
-<p align="center">Made with ❤️ by Armin Pakdaman</p>
+<p align="center">Made with 🖤 by Armin Pakdaman</p>
